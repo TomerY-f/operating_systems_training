@@ -14,6 +14,7 @@ int main()
     DWORD nNumberOfBytesToRead = BUFFER_SIZE;
     DWORD nNumberOfBytesRead;
 
+    // Making a handle open an existing txt file (must be in same location with sourcecode main.cpp)
     hFile = CreateFile(input_file,               
         GENERIC_READ,          
         FILE_SHARE_READ,       
@@ -29,6 +30,8 @@ int main()
         return 1;
     }
 
+    // Using the handle to ReadData from the file into a buffer.
+    // Important - The buffer reads bytes as the nNumberOfBytesToRead defines him, without null-terminator to the string inside the text file.
     BOOL reading_result = ReadFile(hFile,
         pbuffer,
         nNumberOfBytesToRead,

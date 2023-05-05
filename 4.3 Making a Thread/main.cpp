@@ -17,6 +17,8 @@ DWORD WINAPI sum(LPVOID lparam) {
 	struct Variables* nums = (Variables*)lparam;
 	INT sum = nums->a + nums->b;
 	printf("The sum is: %d\n", sum);
+
+	Sleep(100000); // Suspension of code execution.
 	return 1;
 
 }
@@ -30,7 +32,23 @@ int main()
 	my_struct->b = 9;
 
 	LPVOID pstruct = my_struct;
-	sum(pstruct);
+	
+	HANDLE hThread;
+	
+
+	// Create the thread to begin execution on its own.
+	hThread = CreateThread(
+		NULL,                   // default security attributes
+		0,                      // use default stack size  
+		sum,					// thread function name
+		pstruct,				// argument to thread function 
+		0,                      // use default creation flags 
+		NULL);					// returns the thread identifier 
+
+	WaitForSingleObject(hThread, INFINITE);
+
+
+	CloseHandle(hThread);
 }
 
 

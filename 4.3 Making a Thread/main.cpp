@@ -12,6 +12,7 @@ struct Thread_Identifier
 	CHAR name[10];
 };
 
+// Threads function - ping and count.
 DWORD WINAPI ping_and_count(LPVOID lparam) {
 
 	struct Thread_Identifier* thread = (Thread_Identifier*)lparam;
@@ -28,6 +29,7 @@ DWORD WINAPI ping_and_count(LPVOID lparam) {
 int main()
 {
 
+	// Threads decleration
 	struct Thread_Identifier* thread_1 = (Thread_Identifier*)malloc(sizeof(Thread_Identifier));
 	thread_1->index = 0;
 	strcpy(thread_1->name, "thread_1");
@@ -52,7 +54,7 @@ int main()
 	HANDLE hThreadHandles[4];
 	
 
-	// Create the thread to begin execution on its own.
+	// Create the threads to begin execution on its own.
 	for (INT i = 0; i < 4; i++) {
 		hThreadHandles[i] = CreateThread(
 			NULL,
@@ -63,6 +65,7 @@ int main()
 			NULL);
 	}
 
+	//Wait for threads to finish and close them.
 	if ((hThreadHandles[0] != NULL) && (hThreadHandles[1] != NULL) && (hThreadHandles[2] != NULL) && (hThreadHandles[3] != NULL)) {
 		WaitForMultipleObjects(4, hThreadHandles, TRUE, INFINITE);
 		for (INT i = 0; i < 4; i++) {

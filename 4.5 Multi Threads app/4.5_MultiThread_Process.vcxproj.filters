@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="4.3 making a thread\main.cpp">
+    <ClCompile Include="..\4.3 Making a Thread\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

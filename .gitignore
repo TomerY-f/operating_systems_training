@@ -53,3 +53,5 @@ dkms.conf
 
 # Visual Studio Environment
 *.vs/
+*.vcxproj/
+*.sln/

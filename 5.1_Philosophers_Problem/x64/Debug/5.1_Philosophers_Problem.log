@@ -1,2 +1,3 @@
 ﻿  philosophers.cpp
+C:\Users\xbont\source\repos\operating_systems_training\5.1_Philosophers_Problem\philosophers.cpp(57,22): warning C4838: conversion from 'int' to 'CHAR' requires a narrowing conversion
   5.1_Philosophers_Problem.vcxproj -> C:\Users\xbont\source\repos\operating_systems_training\5.1_Philosophers_Problem\x64\Debug\5.1_Philosophers_Problem.exe

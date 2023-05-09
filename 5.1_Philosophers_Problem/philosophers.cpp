@@ -24,7 +24,7 @@ DWORD WINAPI philosopher_eating(LPVOID lparam) {
 
 	while (thread->counter < LOOP_SIZE)
 	{
-		printf("%s eat %d times.", thread->name, thread->counter);
+		printf("%s eat %d times.\n", thread->name, thread->counter);
 		thread->counter = thread->counter + 1;
 		Sleep(1000);
 	}
@@ -52,7 +52,10 @@ int main()
 		
 		threads[i] = (philosopher_identifier*)malloc(sizeof(philosopher_identifier));
 		threads[i]->counter = 0;
-		CHAR name[20] = { *"Philosopher" , (CHAR)i}; ////check this
+		
+		CHAR name[20] = "Philosopher "; ////check this
+		CHAR index[] = { i + '0' };
+		strcat_s(name, index);
 		strcpy_s(threads[i]->name, name);
 
 		pthreads[i] = threads[i];

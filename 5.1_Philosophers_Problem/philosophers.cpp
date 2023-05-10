@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <stdio.h>
+#include <string>
 
 #define LOOP_SIZE 50
 
@@ -26,7 +27,7 @@ DWORD WINAPI philosopher_eating(LPVOID lparam) {
 	{
 		printf("%s eat %d times.\n", thread->name, thread->counter);
 		thread->counter = thread->counter + 1;
-		Sleep(1000);
+		Sleep(10);
 	}
 	LeaveCriticalSection(&chopstick01);
 	return 1;
@@ -48,13 +49,15 @@ int main()
 
 
 	// Create the threads to begin execution on its own.
-	for (INT i = 0; i < sizeof(hPhilosophers); i++) {
+	INT number_of_philosophers = sizeof(hPhilosophers) / sizeof(hPhilosophers[0]);
+	for (INT i = 0; i < number_of_philosophers; i++) {
 		
 		threads[i] = (philosopher_identifier*)malloc(sizeof(philosopher_identifier));
 		threads[i]->counter = 0;
 		
 		CHAR name[20] = "Philosopher "; ////check this
-		CHAR index[] = { i + '0' };
+		
+		CHAR index[] = {i + '0', 0};
 		strcat_s(name, index);
 		strcpy_s(threads[i]->name, name);
 
@@ -70,8 +73,8 @@ int main()
 	}
 
 	//Wait for threads to finish and close them.
-	WaitForMultipleObjects(sizeof(hPhilosophers), hPhilosophers, TRUE, INFINITE);
-	for (INT i = 0; i < sizeof(hPhilosophers); i++) {
+	WaitForMultipleObjects(number_of_philosophers, hPhilosophers, TRUE, INFINITE);
+	for (INT i = 0; i < number_of_philosophers; i++) {
 		CloseHandle(hPhilosophers[i]);
 	}
 	

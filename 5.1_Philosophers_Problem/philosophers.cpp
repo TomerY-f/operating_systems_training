@@ -1,14 +1,9 @@
 #include <windows.h>
 #include <stdio.h>
-#include <string>
 
 #define LOOP_SIZE 50
 
-CRITICAL_SECTION chopstick01;
-CRITICAL_SECTION chopstick02;
-CRITICAL_SECTION chopstick03;
-CRITICAL_SECTION chopstick04;
-CRITICAL_SECTION chopstick05;
+CRITICAL_SECTION chopsticks[5];
 
 struct philosopher_identifier
 {
@@ -19,7 +14,10 @@ struct philosopher_identifier
 // Threads function - ping and count.
 DWORD WINAPI philosopher_eating(LPVOID lparam) {
 
-	EnterCriticalSection(&chopstick01);
+	if (TryEnterCriticalSection(&chopsticks[0])) {
+
+	}
+
 
 	struct philosopher_identifier* thread = (philosopher_identifier*)lparam;
 
@@ -29,18 +27,19 @@ DWORD WINAPI philosopher_eating(LPVOID lparam) {
 		thread->counter = thread->counter + 1;
 		Sleep(10);
 	}
-	LeaveCriticalSection(&chopstick01);
+
+
+	LeaveCriticalSection(&chopsticks[0]);
 	return 1;
 }
 
 int main()
 {
 	// Locks initializing
-	InitializeCriticalSection(&chopstick01);
-	InitializeCriticalSection(&chopstick02);
-	InitializeCriticalSection(&chopstick03);
-	InitializeCriticalSection(&chopstick04);
-	InitializeCriticalSection(&chopstick05);
+	INT number_of_chopsticks = sizeof(chopsticks) / sizeof(chopsticks[0]);
+	for (INT i = 0; i < number_of_chopsticks; i++) {
+		InitializeCriticalSection(&chopsticks[i]);
+	}
 	
 	// Threads decleration
 	struct philosopher_identifier* threads[5];
@@ -80,10 +79,9 @@ int main()
 	
 
 	// Lock deletion
-	DeleteCriticalSection(&chopstick01);
-	DeleteCriticalSection(&chopstick02);
-	DeleteCriticalSection(&chopstick03);
-	DeleteCriticalSection(&chopstick04);
-	DeleteCriticalSection(&chopstick05);
+	for (INT i = 0; i < number_of_chopsticks; i++) {
+		DeleteCriticalSection(&chopsticks[i]);
+	}
+	return 1;
 }
 

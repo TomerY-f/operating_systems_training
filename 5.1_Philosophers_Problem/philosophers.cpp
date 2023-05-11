@@ -14,22 +14,25 @@ struct philosopher_identifier
 // Threads function - ping and count.
 DWORD WINAPI philosopher_eating(LPVOID lparam) {
 
-	if (TryEnterCriticalSection(&chopsticks[0])) {
+	INT number_of_chopsticks = sizeof(chopsticks) / sizeof(chopsticks[0]);
+	for (INT i = 0; i < number_of_chopsticks; i++) {
+		if (TryEnterCriticalSection(&chopsticks[i])) {
+			for (INT j = 0; j < number_of_chopsticks; j++) {
+				if (TryEnterCriticalSection(&chopsticks[i])) {
+					struct philosopher_identifier* thread = (philosopher_identifier*)lparam;
 
+					while (thread->counter < LOOP_SIZE)
+					{
+						printf("%s eat %d times.\n", thread->name, thread->counter);
+						thread->counter = thread->counter + 1;
+						Sleep(10);
+					}
+				}
+			}
+		}
+		LeaveCriticalSection(&chopsticks[i]);
 	}
 
-
-	struct philosopher_identifier* thread = (philosopher_identifier*)lparam;
-
-	while (thread->counter < LOOP_SIZE)
-	{
-		printf("%s eat %d times.\n", thread->name, thread->counter);
-		thread->counter = thread->counter + 1;
-		Sleep(10);
-	}
-
-
-	LeaveCriticalSection(&chopsticks[0]);
 	return 1;
 }
 

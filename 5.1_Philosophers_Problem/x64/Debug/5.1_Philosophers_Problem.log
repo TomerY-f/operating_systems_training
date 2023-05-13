@@ -1,3 +1,7 @@
 ﻿  philosophers.cpp
-C:\Users\xbont\source\repos\operating_systems_training\5.1_Philosophers_Problem\philosophers.cpp(62,21): warning C4838: conversion from 'int' to 'CHAR' requires a narrowing conversion
+C:\Users\xbont\source\repos\operating_systems_training\5.1_Philosophers_Problem\philosophers.cpp(66,21): warning C4838: conversion from 'int' to 'CHAR' requires a narrowing conversion
+C:\Users\xbont\source\repos\operating_systems_training\5.1_Philosophers_Problem\philosophers.cpp(94,9): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 2 has type 'time_t'
+C:\Users\xbont\source\repos\operating_systems_training\5.1_Philosophers_Problem\philosophers.cpp(94,9): message : consider using '%lld' in the format string
+C:\Users\xbont\source\repos\operating_systems_training\5.1_Philosophers_Problem\philosophers.cpp(94,9): message : consider using '%Id' in the format string
+C:\Users\xbont\source\repos\operating_systems_training\5.1_Philosophers_Problem\philosophers.cpp(94,9): message : consider using '%I64d' in the format string
   5.1_Philosophers_Problem.vcxproj -> C:\Users\xbont\source\repos\operating_systems_training\5.1_Philosophers_Problem\x64\Debug\5.1_Philosophers_Problem.exe

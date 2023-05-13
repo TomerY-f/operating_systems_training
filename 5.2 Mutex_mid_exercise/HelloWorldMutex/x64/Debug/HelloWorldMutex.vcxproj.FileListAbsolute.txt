@@ -1,0 +1,1 @@
+C:\Users\xbont\source\repos\operating_systems_training\5.2 Mutex_mid_exercise\HelloWorldMutex\x64\Debug\HelloWorldMutex.exe

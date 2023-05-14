@@ -57,3 +57,5 @@ dkms.conf
 *.sln
 *.log
 *.tlog
+*.user
+*.filters

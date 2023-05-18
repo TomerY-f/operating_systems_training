@@ -1,1 +1,0 @@
-C:\Users\xbont\source\repos\operating_systems_training\5.3_Philosophers_Problem_Mutex\Eating_Philosopher\x64\Debug\Eating_Philosopher.exe

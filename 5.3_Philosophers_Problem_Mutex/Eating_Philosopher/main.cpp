@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
 	INT number_of_chopsticks = sizeof(hChopsticksMutex) / sizeof(hChopsticksMutex[0]);
 
 	for (INT i = 0; i < number_of_chopsticks; i++) {
-	
+
 		CHAR chopstick_name[20] = "chopstick_mutex";
 		CHAR index[] = { i + '0', 0 };
 		strcat_s(chopstick_name, index);
@@ -38,16 +38,17 @@ int main(int argc, char* argv[]) {
 						INFINITE);
 					if (second_chopstick_availability_Result == WAIT_OBJECT_0) {
 						printf("Philosopher %d eat %d times.\n", atoi(argv[1]), eating_counter);
+						eating_counter++;
+						continue;
 					}
 				}
 			}
-
 			// Release each eating session one chopstick.
 			ReleaseMutex(hChopsticksMutex[i]);
+			continue;
 		}
-		eating_counter++;
 	}
-	
+
 	// Close all Handles
 	for (INT i = 0; i < number_of_chopsticks; i++) {
 		CloseHandle(hChopsticksMutex[i]);

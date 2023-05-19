@@ -1,17 +1,10 @@
 #include <Windows.h>
 #include <stdio.h>
 
-#define EXE_FILENAME "C:\\Users\\xbont\\source\\repos\\operating_systems_training\\5.3_Philosophers_Problem_Mutex\\Eating_Philosopher.exe"
+#define EXE_FILENAME "C:\\Users\\xbont\\source\\repos\\operating_systems_training\\5.3_Philosophers_Problem_Mutex\\Eating_Philosopher\\x64\\Debug\\Eating_Philosopher.exe"
 
 int main()
 {
-	STARTUPINFOA si; //Default Startup info for CreateProcessA.
-	PROCESS_INFORMATION pi; //Default Process info for CreateProcessA.
-
-	ZeroMemory(&si, sizeof(si));
-	si.cb = sizeof(si);
-	ZeroMemory(&pi, sizeof(pi));
-
 	// create argument string for processes:
 	CHAR exe_filename[] = EXE_FILENAME;
 
@@ -19,11 +12,14 @@ int main()
 	PCHAR processes_param[5];
 	INT number_of_processes = sizeof(process_args) / sizeof(process_args[0]);
 
+	//Processes info:
+	STARTUPINFOA si; //Default Startup info for CreateProcessA.
+	PROCESS_INFORMATION pi[5]; //Default Process info for CreateProcessA. Must be a constant value - that's why usnig magic number 5 and not number of processes.
 
 	// Init processes command line:
 	for (INT i = 0; i < number_of_processes; i++) {
 		_itoa_s(i, process_args, 10);
-		INT process_size = strlen(exe_filename) + strlen(process_args) + 2;
+		INT process_size = strlen(exe_filename) + strlen(process_args) + 3;
 		processes_param[i] = (PCHAR)malloc(process_size * sizeof(CHAR)); //Allocate memory for command line parameter for CreateFileA.
 		sprintf_s(processes_param[i], process_size, "%s %s", exe_filename, process_args); //String command line parameter.
 	}
@@ -40,6 +36,7 @@ int main()
 		hChopsticksMutex[i] = CreateMutexA(NULL,
 			FALSE,
 			chopstick_name);
+		printf("Mutex name: %s", chopstick_name);
 	}
 
 	BOOL success_flags[5];
@@ -47,6 +44,12 @@ int main()
 
 	// Execute the child processes.
 	for (INT i = 0; i < number_of_success_flags; i++) {
+		// Startup and process info:
+		ZeroMemory(&si, sizeof(si));
+		si.cb = sizeof(si);
+		ZeroMemory(&pi[i], sizeof(pi[i]));
+
+		// Process creation
 		success_flags[i] = TRUE;
 		success_flags[i] = CreateProcessA(NULL,
 			processes_param[i], // Command line
@@ -57,16 +60,20 @@ int main()
 			NULL, // Use parent's environment block
 			NULL, // Use parent's starting directory
 			&si, // Pointer to STARTUPINFO structure
-			&pi); // Pointer to PROCESS_INFORMATION structure
+			&pi[i]); // Pointer to PROCESS_INFORMATION structure
+
+	}
+
+	// Wait until child processes exit:
+	for (int i = 0; i < number_of_processes; i++) {
+		WaitForSingleObject(pi[i].hProcess, INFINITE);
 	}
 
 	// Close Handels and free allocation
-	CloseHandle(pi.hThread);
-	CloseHandle(pi.hProcess);
-
 	for (INT i = 0; i < number_of_chopsticks; i++) {
+		CloseHandle(pi[i].hThread);
+		CloseHandle(pi[i].hProcess);
 		ReleaseMutex(hChopsticksMutex[i]);
-		CloseHandle(hChopsticksMutex[i]);
 		free(processes_param[i]);
 	}
 

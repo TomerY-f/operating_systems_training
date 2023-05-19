@@ -42,15 +42,15 @@ int main(int argc, char* argv[]) {
 	//printf("Mutex 4: %d\n\n", WaitForSingleObject(hChopsticksMutex[4], 0));
 
 	while (eating_counter < LOOP_SIZE) {
-		printf("DEBUG: Mutex name: % dEnter  the action loop\n", atoi(argv[1]));
+		//printf("DEBUG: Mutex name: % dEnter  the action loop\n", atoi(argv[1]));
 		//Check if two mutexs are not occupied, if not, act:
 		for (INT i = 0; i < number_of_chopsticks; i++) {
 			DWORD first_chopstick_availability_Result = WaitForSingleObject(hChopsticksMutex[i],
-				INFINITE);
+				0);
 			if (first_chopstick_availability_Result == WAIT_OBJECT_0) {
 				for (INT j = 0; j < number_of_chopsticks; j++) {
 					DWORD second_chopstick_availability_Result = WaitForSingleObject(hChopsticksMutex[j],
-						INFINITE);
+						0);
 					if (second_chopstick_availability_Result == WAIT_OBJECT_0) {
 						printf("Philosopher %d eat %d times.\n", atoi(argv[1]), eating_counter);
 						eating_counter++;
@@ -62,14 +62,14 @@ int main(int argc, char* argv[]) {
 					}
 					else
 					{
-						printf("DEBUG: Mutex %d is not available.\n", j);
+						//printf("DEBUG: Mutex %d is not available.\n", j);
 						continue;
 					}
 				}
 			}
 			else
 			{
-				printf("DEBUG: Mutex %d is not available.\n", i);
+				//printf("DEBUG: Mutex %d is not available.\n", i);
 				continue;
 			}
 			break;

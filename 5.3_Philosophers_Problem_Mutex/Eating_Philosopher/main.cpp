@@ -30,19 +30,9 @@ int main(int argc, char* argv[]) {
 		hChopsticksMutex[i] = CreateMutexA(NULL,
 			FALSE,
 			chopstick_name);
-		//printf("DEBUG: Mutex name: %s initiated on Process %d\n", chopstick_name, atoi(argv[1]));
 	}
 
-	//Mutex occupation debugging:
-	//printf("\nMutex available = %d\n", WAIT_OBJECT_0);
-	//printf("Mutex 0: %d\n", WaitForSingleObject(hChopsticksMutex[0], 0));
-	//printf("Mutex 1: %d\n", WaitForSingleObject(hChopsticksMutex[1], 0));
-	//printf("Mutex 2: %d\n", WaitForSingleObject(hChopsticksMutex[2], 0));
-	//printf("Mutex 3: %d\n", WaitForSingleObject(hChopsticksMutex[3], 0));
-	//printf("Mutex 4: %d\n\n", WaitForSingleObject(hChopsticksMutex[4], 0));
-
 	while (eating_counter < LOOP_SIZE) {
-		//printf("DEBUG: Mutex name: % dEnter  the action loop\n", atoi(argv[1]));
 		//Check if two mutexs are not occupied, if not, act:
 		for (INT i = 0; i < number_of_chopsticks; i++) {
 			DWORD first_chopstick_availability_Result = WaitForSingleObject(hChopsticksMutex[i],
@@ -54,7 +44,6 @@ int main(int argc, char* argv[]) {
 					if (second_chopstick_availability_Result == WAIT_OBJECT_0) {
 						printf("Philosopher %d eat %d times.\n", atoi(argv[1]), eating_counter);
 						eating_counter++;
-						Sleep(500);
 
 						// Release each eating session one chopstick.
 						ReleaseMutex(hChopsticksMutex[i]);
@@ -62,14 +51,14 @@ int main(int argc, char* argv[]) {
 					}
 					else
 					{
-						//printf("DEBUG: Mutex %d is not available.\n", j);
+						//Mutex [j] is not available.
 						continue;
 					}
 				}
 			}
 			else
 			{
-				//printf("DEBUG: Mutex %d is not available.\n", i);
+				//Mutex [i] is not available.
 				continue;
 			}
 			break;

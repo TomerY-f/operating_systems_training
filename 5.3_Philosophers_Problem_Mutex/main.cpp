@@ -1,3 +1,8 @@
+/// Author - Tomer Yehezqel 18/05/2023
+/// A heads process for 5 processes represent philosophers eating. 
+/// The process init 5 Mutexes to 5 processes, each process need to Mutexes to run.
+/// return: 1 as success.
+
 #include <Windows.h>
 #include <stdio.h>
 
@@ -36,7 +41,6 @@ int main()
 		hChopsticksMutex[i] = CreateMutexA(NULL,
 			FALSE,
 			chopstick_name);
-		printf("Mutex name: %s", chopstick_name);
 	}
 
 	BOOL success_flags[5];

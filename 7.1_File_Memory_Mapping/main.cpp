@@ -1,19 +1,22 @@
-/// Info: Open a file and regex the amount of "A" chars appering in him.
-/// Author: Tomer
-/// Date: 21/05/2023
+/*
+Info: Open a file and regex the amount of "A" chars appering in him, using mapping functions.
+Author: Tomer
+Date: 21/05/2023
+*/
 
 #include <Windows.h>
 #include <stdio.h>
 
-#define BUFFER_SIZE 1000 
+#define BUFFER_SIZE 65536 
 #define CHAR_TO_SEARCH 'A'
 #define FILENAME "gibrish.bin"
 
 int main()
 {
     HANDLE hFile = NULL;
+    HANDLE hMapFile = NULL;
     CHAR inBuffer[BUFFER_SIZE];
-    LPVOID pbuffer = inBuffer;
+    LPSTR pbuffer = inBuffer;
     DWORD nNumberOfBytesToRead = BUFFER_SIZE;
     DWORD nNumberOfBytesRead;
 
@@ -23,50 +26,64 @@ int main()
     // Making a handle open an existing bin file (must be in same location with sourcecode main.cpp)
     hFile = CreateFileA(p_input_file,
         GENERIC_READ,
-        FILE_SHARE_READ, // Other processes can share this handle.
+        0,              // Other processes can't share this handle.
         NULL,
         OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL,
         NULL);
 
-    int error_handle_code = GetLastError();
-    if (error_handle_code != 0)
+    DWORD file_size = GetFileSize(hFile, NULL); //Get File size.
+
+    if (hFile == INVALID_HANDLE_VALUE)
     {
-        printf("Handle is loaded in invalid way. Error code: %d\n", error_handle_code);
-        return 1;
+        printf("ERROR: %u :unable to create file \"%s\".\n",
+            GetLastError(),
+            p_input_file);
     }
 
-    // Using the handle to ReadData from the file into a buffer.
-    // Important - The buffer reads bytes as the nNumberOfBytesToRead defines him, without null-terminator to the string inside the text file.
+    hMapFile = CreateFileMappingA(hFile, 
+        NULL,               /*not inherited*/
+        PAGE_READONLY,     /*read write attributes*/
+        0,                  /*high-order size*/
+        0,                  /*low-order size*/
+        "myFile");              /*file name for sharing*/
+
+    if (NULL == hMapFile)
+    {
+        printf("ERROR:%u: Failed to create File Mapping.\n",
+            GetLastError());
+        return 1;
+    }
 
     int char_counter = 0;
 
     printf("[DEBUG]: Start reading file.\n");
     while (TRUE) {
-        BOOL reading_result = ReadFile(hFile,
-            pbuffer,
-            nNumberOfBytesToRead,
-            &nNumberOfBytesRead,
-            NULL);
 
-        if ((int)nNumberOfBytesRead == 0) {
-            printf("[DEBUG]: EOF \n");
-            break;
-        }
+        pbuffer = (LPSTR)MapViewOfFile(hMapFile, // handle to map object
+            FILE_MAP_READ,  // read permission
+            0,
+            0,
+            BUFFER_SIZE);
 
-        if (!reading_result)
+        if (NULL == pbuffer)
         {
-            printf("Worked wrong. error code: %d. \n", GetLastError());
-            return 1;
+            printf("Could not map view of file, Or hand of file. Error: (%d).\n",
+                GetLastError());
+
+            break;
         }
 
         for (int i = 0; i < BUFFER_SIZE; i++) {
             if (inBuffer[i] == CHAR_TO_SEARCH) char_counter++;
         }
+
+        UnmapViewOfFile(pbuffer);
     }
     
     printf("Work properly. The number of times 'A' shown in the file is: %d \n", char_counter);
 
+    CloseHandle(hMapFile);
     CloseHandle(hFile);
     return 0;
 }

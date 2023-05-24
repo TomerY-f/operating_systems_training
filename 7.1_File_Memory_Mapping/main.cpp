@@ -5,10 +5,9 @@
 #include <Windows.h>
 #include <stdio.h>
 
-WCHAR input_file[12] = L"gibrish.bin";
-LPCWSTR p_input_file = input_file;
-
-#define BUFFER_SIZE 1000
+#define BUFFER_SIZE 1000 
+#define CHAR_TO_SEARCH 'A'
+#define FILENAME "gibrish.bin"
 
 int main()
 {
@@ -18,10 +17,13 @@ int main()
     DWORD nNumberOfBytesToRead = BUFFER_SIZE;
     DWORD nNumberOfBytesRead;
 
+    CHAR input_file[12] = FILENAME;
+    LPCSTR p_input_file = input_file;
+
     // Making a handle open an existing bin file (must be in same location with sourcecode main.cpp)
-    hFile = CreateFile(input_file,
+    hFile = CreateFileA(p_input_file,
         GENERIC_READ,
-        FILE_SHARE_READ,
+        FILE_SHARE_READ, // Other processes can share this handle.
         NULL,
         OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL,
@@ -36,20 +38,36 @@ int main()
 
     // Using the handle to ReadData from the file into a buffer.
     // Important - The buffer reads bytes as the nNumberOfBytesToRead defines him, without null-terminator to the string inside the text file.
-    BOOL reading_result = ReadFile(hFile,
-        pbuffer,
-        nNumberOfBytesToRead,
-        &nNumberOfBytesRead,
-        NULL);
 
-    if (!reading_result)
-    {
-        printf("Worked wrong. error code: %d. \n", GetLastError());
-        return 1;
+    int char_counter = 0;
+
+    printf("[DEBUG]: Start reading file.\n");
+    while (TRUE) {
+        BOOL reading_result = ReadFile(hFile,
+            pbuffer,
+            nNumberOfBytesToRead,
+            &nNumberOfBytesRead,
+            NULL);
+
+        if ((int)nNumberOfBytesRead == 0) {
+            printf("[DEBUG]: EOF \n");
+            break;
+        }
+
+        Sleep(10000); //For research with process explorer
+
+        if (!reading_result)
+        {
+            printf("Worked wrong. error code: %d. \n", GetLastError());
+            return 1;
+        }
+
+        for (int i = 0; i < BUFFER_SIZE; i++) {
+            if (inBuffer[i] == CHAR_TO_SEARCH) char_counter++;
+        }
     }
-
-    printf("Work properly. The text is: %.*s \n", (int)nNumberOfBytesRead, inBuffer);
-
+    
+    printf("Work properly. The number of times 'A' shown in the file is: %d \n", char_counter);
 
     CloseHandle(hFile);
     return 0;

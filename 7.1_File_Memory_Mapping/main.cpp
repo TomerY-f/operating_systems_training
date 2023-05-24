@@ -54,8 +54,6 @@ int main()
             break;
         }
 
-        Sleep(10000); //For research with process explorer
-
         if (!reading_result)
         {
             printf("Worked wrong. error code: %d. \n", GetLastError());

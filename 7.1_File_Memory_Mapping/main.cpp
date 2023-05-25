@@ -1,91 +1,84 @@
-/*
-Info: Open a file and regex the amount of "A" chars appering in him, using mapping functions.
-Author: Tomer
-Date: 21/05/2023
-*/
-
-#include <Windows.h>
+#include "windows.h"
 #include <stdio.h>
 
-#define BUFFER_SIZE 65536 
-#define CHAR_TO_SEARCH 'A'
-#define FILENAME "gibrish.bin"
+#define FILENAME "C:\\Users\\xbont\\source\\repos\\operating_systems_training\\7.1_File_Memory_Mapping\\x64\\Debug\\gibrish.bin"
+#define SEARCH_LETTER "A"
+
+int CountChar(PCHAR pBuf, int buff_size, LPCSTR letter);
 
 int main()
 {
-    HANDLE hFile = NULL;
-    HANDLE hMapFile = NULL;
-    CHAR inBuffer[BUFFER_SIZE];
-    LPSTR pbuffer = inBuffer;
-    DWORD nNumberOfBytesToRead = BUFFER_SIZE;
-    DWORD nNumberOfBytesRead;
+	// get system memory allignement granularity (usually 65536) for proper mapping to buffer.
+	SYSTEM_INFO sys_info;
+	GetSystemInfo(&sys_info);
+	int mem_buffer_size = sys_info.dwAllocationGranularity;
+	printf("Proper buffer size: %d\n", mem_buffer_size);
 
-    CHAR input_file[12] = FILENAME;
-    LPCSTR p_input_file = input_file;
+	// open an existing file for reading
+	HANDLE hFile;
+	LPCSTR pFileName = FILENAME;
+	hFile = CreateFileA(
+		pFileName, // file name
+		GENERIC_READ, // access type
+		0, // other processes can't share
+		NULL, // security
+		OPEN_EXISTING, // open only if file exists
+		FILE_ATTRIBUTE_NORMAL,
+		NULL);
+	
+	DWORD file_size = GetFileSize(hFile, NULL);
 
-    // Making a handle open an existing bin file (must be in same location with sourcecode main.cpp)
-    hFile = CreateFileA(p_input_file,
-        GENERIC_READ,
-        0,              // Other processes can't share this handle.
-        NULL,
-        OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL,
-        NULL);
+	// create file mapping object
+	HANDLE hMapFile;
+	hMapFile = CreateFileMappingA(hFile, // file handle 
+		NULL, // default security
+		PAGE_READONLY, // read access
+		0, // maximum object size (high-order // DWORD)
+		0, // maximum object size (low-order DWORD) // 0 means map the whole file
+		"myFile"); // name of mapping object, in case we want to share it. 
+		
+	//read the file, one page at a time
+	int buffer_number = 0, count;
+	int file_location = buffer_number * mem_buffer_size;
+	LPSTR pBuf;
+	LPCSTR letter = SEARCH_LETTER;
 
-    DWORD file_size = GetFileSize(hFile, NULL); //Get File size.
+	while (file_location <= (file_size - mem_buffer_size)) {
+		pBuf = (LPSTR)MapViewOfFile(
+			hMapFile, // handle to map object
+			FILE_MAP_READ, // read/write permission
+			0, // start point (upper word)
+			file_location, // start point (lower word)
+			mem_buffer_size); // how many bytes to read
 
-    if (hFile == INVALID_HANDLE_VALUE)
-    {
-        printf("ERROR: %u :unable to create file \"%s\".\n",
-            GetLastError(),
-            p_input_file);
-    }
+		count = CountChar(pBuf, mem_buffer_size, letter);
+		printf("Number of %s letter in the file: %d\n",SEARCH_LETTER ,count);
+		buffer_number++;
 
-    hMapFile = CreateFileMappingA(hFile, 
-        NULL,               /*not inherited*/
-        PAGE_READONLY,     /*read write attributes*/
-        0,                  /*high-order size*/
-        0,                  /*low-order size*/
-        "myFile");              /*file name for sharing*/
+		file_location = mem_buffer_size * buffer_number;
+		UnmapViewOfFile(pBuf);
+		Sleep(100);
+	}
 
-    if (NULL == hMapFile)
-    {
-        printf("ERROR:%u: Failed to create File Mapping.\n",
-            GetLastError());
-        return 1;
-    }
-
-    int char_counter = 0;
-
-    printf("[DEBUG]: Start reading file.\n");
-    while (TRUE) {
-
-        pbuffer = (LPSTR)MapViewOfFile(hMapFile, // handle to map object
-            FILE_MAP_READ,  // read permission
-            0,
-            0,
-            BUFFER_SIZE);
-
-        if (NULL == pbuffer)
-        {
-            printf("Could not map view of file, Or hand of file. Error: (%d).\n",
-                GetLastError());
-
-            break;
-        }
-
-        for (int i = 0; i < BUFFER_SIZE; i++) {
-            if (inBuffer[i] == CHAR_TO_SEARCH) char_counter++;
-        }
-
-        UnmapViewOfFile(pbuffer);
-    }
-    
-    printf("Work properly. The number of times 'A' shown in the file is: %d \n", char_counter);
-
-    CloseHandle(hMapFile);
-    CloseHandle(hFile);
-    return 0;
+	int reminder = file_size - file_location;
+	pBuf = (LPSTR)MapViewOfFile(
+		hMapFile, // handle to map object
+		FILE_MAP_READ, // read/write permission
+		0, // start point (upper word)
+		file_location, // start point (lower word)
+		reminder); // how many bytes to read
+	count = CountChar(pBuf, reminder, letter);
+	printf("%d\n", count);
+	UnmapViewOfFile(pBuf);
+	CloseHandle(hMapFile);
+	CloseHandle(hFile);
+	return 0;
 }
 
-int main();
+int CountChar(PCHAR pBuf, int buff_size, LPCSTR letter) {
+	static int count = 0;
+	for (int i = 0; i < buff_size; i++) {
+		if (pBuf[i] == *letter) count++;
+	}
+	return count;
+}

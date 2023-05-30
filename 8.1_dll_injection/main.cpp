@@ -10,8 +10,13 @@
 typedef HMODULE(*P_LIB_FUNC)(CHAR*); //Pointer to Library function in the kernel.
 typedef void(*P_SHARE_FUNC)(void); //Pointer to Share function in the dll.
 
-int main()
+int main(INT argc, LPSTR argv[])
 {
+	if (argc < 2) {
+		
+		return 0;
+	}
+
 	// Get full path of DLL to inject
 	CHAR path_buffer[BUFFER_SIZE];
 
@@ -26,7 +31,7 @@ int main()
 		(PVOID)GetProcAddress(GetModuleHandle(TEXT("Kernel32.dll")),
 		"LoadLibraryA");
 	
-	DWORD dwPID = 28508; //TODO: fix it to arg[v]
+	DWORD dwPID = atol(argv[1]); //PID is an input.
 
 	// open remote process
 	HANDLE proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPID);
@@ -89,5 +94,5 @@ int main()
 
 	WaitForSingleObject(hRemote, INFINITE);
 	check = CloseHandle(hRemote);
-	return 0;
+	return 1;
 }

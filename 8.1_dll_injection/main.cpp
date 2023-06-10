@@ -10,6 +10,7 @@
 typedef HMODULE(*P_LIB_FUNC)(CHAR*); //Pointer to Library function in the kernel.
 typedef void(*P_SHARE_FUNC)(void); //Pointer to Share function in the dll.
 
+// argv is a given PID to an open process to be "hacked".
 int main(INT argc, LPSTR argv[])
 {
 	if (argc < 2) {
@@ -32,6 +33,7 @@ int main(INT argc, LPSTR argv[])
 		"LoadLibraryA");
 	
 	DWORD dwPID = atol(argv[1]); //PID is an input.
+	printf("Hello world.");
 
 	// open remote process
 	HANDLE proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPID);

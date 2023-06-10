@@ -3,6 +3,7 @@
 
 WCHAR input_file[9] = L"test.txt";
 LPCWSTR p_input_file = input_file;
+DWORD saved_hooked_func_addr;
 
 #define BUFFER_SIZE 30
 
@@ -11,6 +12,16 @@ void hooked_message_box() {
         (LPCSTR)"Hacked by Tomer Yehezqel\n",
         (LPCSTR)"Hooked the function succeed",
         MB_DEFBUTTON2);
+
+	_asm {
+		pop edi; Restore Registers
+		pop esi
+		pop ebx
+		add esp, 0C0h; Clear Local Variables
+		mov esp, ebp; Restore ESP
+		pop ebp; Restore EBP
+		jmp saved_hooked_func_addr
+	}
 }
 
 int hook(PCSTR func_to_hook, PCSTR DLL_to_hook, DWORD new_func_address);
@@ -30,7 +41,7 @@ int main()
     DWORD new_func_address = (DWORD)&hooked_message_box;
 
     hook(func_to_hook, DLL_to_hook, new_func_address);
- 
+
     // Making a handle open an existing txt file (must be in same location with sourcecode main.cpp)
     hFile = CreateFileW(input_file,
         GENERIC_READ,
@@ -140,7 +151,6 @@ int hook(PCSTR func_to_hook, PCSTR DLL_to_hook, DWORD new_func_address) {
 	}
 
 	// Hook IAT: Write over function pointer
-	DWORD saved_hooked_func_addr;
 	DWORD dwOld = NULL;
 	saved_hooked_func_addr = (*thunkIAT).u1.Function;
 	VirtualProtect((LPVOID) & ((*thunkIAT).u1.Function), sizeof(DWORD), PAGE_READWRITE, &dwOld);

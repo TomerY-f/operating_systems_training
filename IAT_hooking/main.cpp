@@ -1,9 +1,14 @@
+/*
+Purpose - IAT hooking to given function in given dll.
+Author - Barak Gonen (exercise edits by Tomer).
+*/
+
 #include <windows.h>
 #include <stdio.h>
 
 WCHAR input_file[9] = L"test.txt";
 LPCWSTR p_input_file = input_file;
-DWORD saved_hooked_func_addr;
+DWORD saved_hooked_func_addr; //Must to be global so from the hooked function jumping to the original function can be done.
 
 #define BUFFER_SIZE 30
 
@@ -13,13 +18,14 @@ void hooked_message_box() {
         (LPCSTR)"Hooked the function succeed",
         MB_DEFBUTTON2);
 
+	// Restore all registers back to without hooking function, then jump to original function (convention can be found by IDA). 
 	_asm {
-		pop edi; Restore Registers
+		pop edi			;Restore Registers
 		pop esi
 		pop ebx
-		add esp, 0C0h; Clear Local Variables
-		mov esp, ebp; Restore ESP
-		pop ebp; Restore EBP
+		add esp, 0C0h	;Clear Local Variables
+		mov esp, ebp	;Restore ESP
+		pop ebp			;Restore EBP
 		jmp saved_hooked_func_addr
 	}
 }

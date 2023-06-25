@@ -16,3 +16,19 @@ Write-Host "$result"
 #Get content from text file and print it:
 $a = Get-Content -Path "C:\Users\xbont\source\repos\operating_systems_training\11.2.4 power shell scripting\test.txt"
 Write-Host "$a"
+
+#If statement
+$number = Read-Host "Please enter a number"
+if ($number -gt 5){
+    Write-Host "too high"    
+}
+elseif($number -lt 5){
+    Write-Host "too low"
+}
+else {
+    Write-Host "High five!"
+}
+
+#Piping (pipe util):
+#Get all processes in current time and print them into a csv.
+Get-Process | Export-Csv -Path C:\Users\xbont\proc.csv

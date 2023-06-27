@@ -30,5 +30,13 @@ else {
 }
 
 #Piping (pipe util):
-#Get all processes in current time and print them into a csv.
-Get-Process | Export-Csv -Path C:\Users\xbont\proc.csv
+    #Get all processes in current time and print them into a csv.
+Get-Process | Export-Csv -Path C:\Users\xbont\source\repos\operating_systems_training\proc.csv
+    #Use pipelines to run methods on objects:
+Get-Process | Sort-Object WS -Descending | Select-Object -First 10
+    #Finding Objects by there properties values:
+Get-Service | Where-Object {$_.Status -EQ "Running"}
+
+#Invoke-Expression - Running code thurogh string (Alias iex)
+$b = "dir"
+iex $b

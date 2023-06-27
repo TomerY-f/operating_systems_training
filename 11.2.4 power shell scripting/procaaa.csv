@@ -1,0 +1,3 @@
+#TYPE System.Management.Automation.PSMethod
+"MemberType","OverloadDefinitions","TypeNameOfValue","Value","Name","IsInstance"
+"Method","System.Collections.ObjectModel.Collection`1[System.String]","System.Management.Automation.PSMethod","string ToString()","ToString","True"

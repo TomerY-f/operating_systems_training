@@ -40,3 +40,5 @@ Get-Service | Where-Object {$_.Status -EQ "Running"}
 #Invoke-Expression - Running code thurogh string (Alias iex)
 $b = "dir"
 iex $b
+    #Or from text:
+$b = Get-Content -Path "C:\Users\xbont\source\repos\operating_systems_training\11.2.4 power shell scripting\test.txt"
